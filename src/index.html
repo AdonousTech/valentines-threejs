@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Valentines Love by @adonoustech</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <meta charset="UTF-8" />
+  <link href="./main.css" rel="stylesheet" type="text/css">
+</head>
+  <body>
+    <h1>Valentines Love in ThreeJS by @adonoustech
+      <p class="instructionalText">Click anywhere for sound 🎵</p>
+    </h1>
+
+
+    <audio loop id="campfire" preload="auto" style="display: none">
+      <source src="https://d58trmu4r2q50.cloudfront.net/three/sounds/Campfire.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="scene-container">
+      <!-- Our <canvas> will be inserted here -->
+    </div>
+    <script type="module" src="./main.js"></script>
+    <!--Rainbow Shader-->
+    <script id="rainbowShader" type="x-shader/x-fragment">
+      uniform float time;
+      uniform vec3 color;
+
+      void main() {
+        vec2 uv = gl_FragCoord.xy / vec2(1024.0, 768.0);
+        vec3 fireColor = vec3(sin(uv.x + time), sin(uv.y + time), sin(uv.x + uv.y + time));
+        vec3 flicker = vec3(sin(time * 5.0), sin(time * 6.0), sin(time * 7.0));
+        vec3 finalColor = mix(color, fireColor + flicker, 0.5);
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    </script>
+
+    <!-- Diamond Shader-->
+    <script id="diamondShader" type="x-shader/x-fragment">
+      uniform sampler2D texture;
+      uniform vec3 viewPosition;
+      varying vec3 vNormal;
+      varying vec2 vUv;
+
+      void main() {
+        vec3 normal = normalize(vNormal);
+        vec3 viewDirection = normalize(viewPosition - vPosition);
+        vec3 reflectDirection = reflect(viewDirection, normal);
+        vec3 refractDirection = refract(viewDirection, normal, 0.9);
+
+        vec4 reflectColor = texture2D(texture, vec2(reflectDirection.x, reflectDirection.y));
+        vec4 refractColor = texture2D(texture, vec2(refractDirection.x, refractDirection.y));
+
+        gl_FragColor = mix(reflectColor, refractColor, 0.5);
+      }
+    </script>
+
+    <!--Rainbow Shader-->
+    <script id="rainbowShader" type="x-shader/x-fragment">
+
+      uniform float time;
+
+      void main() {
+        vec2 uv = gl_FragCoord.xy / vec2(1024.0, 768.0);
+        vec3 color = vec3(1.0, 0.0, 0.05);
+        color = color + vec3(0.3, 0.0, 0.0) * sin(uv.x * 10.0 + time * 2.0);
+        color = color + vec3(0.0, 0.3, 0.0) * sin(uv.y * 10.0 + time * 2.0);
+        gl_FragColor = vec4(color, 1.0);
+      }
+      
+    </script>
+
+
+  </body>
+</html>
